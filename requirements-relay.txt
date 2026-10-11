@@ -1,0 +1,3 @@
+# Relay (Windows machine, next to pearld + pearl-gateway)
+# - pip install -r requirements-relay.txt
+requests>=2.28

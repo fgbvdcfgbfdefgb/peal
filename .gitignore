@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Relay state and logs
+.relay-state.json
+relay.log
+.env-relay.ps1
+
+# NOTE: jobs.txt and share.txt are deliberately NOT ignored - the relay
+# publishes jobs.txt and the miner appends to share.txt through this repo.

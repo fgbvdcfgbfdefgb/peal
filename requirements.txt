@@ -1,0 +1,20 @@
+# Miner (offline Linux machine) - pip install -r requirements.txt
+# numpy is the only hard requirement; blake3 (pip) is an optional speed-up
+# for the commitment hashes (the miner falls back to its own BLAKE3 port).
+numpy>=1.24
+blake3>=1.3 ; platform_machine != "aarch64"
+
+# ---------------------------------------------------------------------------
+# GPU acceleration (optional but strongly recommended on A10G / sm86 boxes).
+# The miner runs on the numpy engine without it; with it, --backend auto uses
+# every visible GPU.  Install the CuPy wheel that matches your CUDA version:
+#
+#   CUDA 12.x : pip install cupy-cuda12x
+#   CUDA 11.x : pip install cupy-cuda11x
+#
+# or install from a local wheel/source when the machine has no internet:
+#   pip install cupy-cuda12x-13.3.0-py3-none-any.whl
+# No nvcc, CUTLASS or PyTorch is required - the kernels are compiled at
+# runtime by NVRTC, which ships inside CuPy.
+# ---------------------------------------------------------------------------
+# cupy-cuda12x>=13.0 ; extra == "gpu"
