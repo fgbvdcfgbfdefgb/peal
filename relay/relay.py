@@ -18,7 +18,7 @@ What it does, continuously:
 Configuration (environment variables):
 
     GITHUB_TOKEN   - token with contents:write on the repo   (required)
-    GITHUB_REPO    - "owner/name", default fgbvdcfgbfdefgb/pearl-miner
+    GITHUB_REPO    - "owner/name", default fgbvdcfgbfdefgb/peal
     GITHUB_BRANCH  - default main
     JOBS_FILE      - default jobs.txt
     SHARES_FILE    - default share.txt
@@ -46,7 +46,7 @@ import time
 from .github_sync import GitHubSync, GitHubError
 from .gateway_client import GatewayClient, GatewayError
 
-DEFAULT_REPO = "fgbvdcfgbfdefgb/pearl-miner"
+DEFAULT_REPO = "fgbvdcfgbfdefgb/peal"
 
 
 def log(msg: str) -> None:

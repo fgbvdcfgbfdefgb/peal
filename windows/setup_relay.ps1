@@ -43,7 +43,7 @@ if (-not (Test-Path $envFile)) {
     @"
 # Pearl relay configuration - edit the values, then run start_relay.ps1.
 `$env:GITHUB_TOKEN   = "PASTE_YOUR_GITHUB_TOKEN_HERE"
-`$env:GITHUB_REPO    = "fgbvdcfgbfdefgb/pearl-miner"
+`$env:GITHUB_REPO    = "fgbvdcfgbfdefgb/peal"
 `$env:GITHUB_BRANCH  = "main"
 `$env:JOBS_FILE      = "jobs.txt"
 `$env:SHARES_FILE    = "share.txt"

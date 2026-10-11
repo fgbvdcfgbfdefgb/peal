@@ -133,7 +133,7 @@ Relay environment variables (all optional except the token):
 | Variable                | Default                        | Meaning                        |
 |-------------------------|--------------------------------|--------------------------------|
 | `GITHUB_TOKEN`          | – (required)                   | token with `contents:write`    |
-| `GITHUB_REPO`           | `fgbvdcfgbfdefgb/pearl-miner`  | `owner/name`                   |
+| `GITHUB_REPO`           | `fgbvdcfgbfdefgb/peal`         | `owner/name`                   |
 | `GITHUB_BRANCH`         | `main`                         | branch to sync                 |
 | `JOBS_FILE`             | `jobs.txt`                     | jobs file in the repo          |
 | `SHARES_FILE`           | `share.txt`                    | shares file in the repo        |
@@ -149,8 +149,8 @@ Relay environment variables (all optional except the token):
 ### 2.1 One-time setup
 
 ```bash
-git clone https://github.com/fgbvdcfgbfdefgb/pearl-miner.git
-cd pearl-miner
+git clone https://github.com/fgbvdcfgbfdefgb/peal.git
+cd peal
 ./run_miner.sh --install        # creates .venv, installs numpy + blake3
 ```
 

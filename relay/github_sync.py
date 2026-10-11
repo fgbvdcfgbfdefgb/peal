@@ -5,7 +5,7 @@ The offline Linux mining machine has no internet except pip and git
 pull/push, so the Windows relay talks to GitHub through the REST Contents
 API (no git binary required on Windows).
 
-Two files are synchronised in the repository ``fgbvdcfgbfdefgb/pearl-miner``:
+Two files are synchronised in the repository ``fgbvdcfgbfdefgb/peal``:
 
   * ``jobs.txt``   - written by the relay (one JSON job per line, append-only
                      from the relay's point of view), pulled by the miner.
