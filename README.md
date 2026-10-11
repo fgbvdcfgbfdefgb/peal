@@ -173,8 +173,15 @@ toolchain, no CUTLASS and no PyTorch. Compute capability 7.5+ is required
 
 ```bash
 ./run_miner.sh --install-gpu    # installs cupy-cuda12x (or -cuda11x)
+./run_miner.sh --gpu-info       # shows the GPUs, or exactly why none is seen
 ./run_miner.sh --gpu-selftest   # GPU-vs-CPU cross-check, then exits
 ```
+
+`--gpu-info` is the first thing to run when anything looks wrong: it prints
+the CuPy version, every visible device (name, compute capability, memory,
+shared-memory limit) and whether the engine can use it, or the precise reason
+it cannot (CuPy missing, driver too old for the CuPy wheel, device older than
+sm_75).
 
 Two checks that need **no GPU** catch most problems before you ever touch
 the mining machine:
@@ -288,6 +295,25 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the protocol details (wire
 formats, the mining algorithm, and what the selftest pins down).
 
 ## Troubleshooting
+
+* **`./run_miner.sh: permission denied`** — the execute bit was lost (some
+  ZIP downloads and some Windows checkouts do that). Either
+
+  ```bash
+  chmod +x run_miner.sh
+  ```
+
+  or skip it entirely: `bash run_miner.sh <same arguments>`.
+* **the miner runs but says "CPU (numpy) engine - the GPUs are NOT being
+  used"** — run `./run_miner.sh --gpu-info`. It prints the exact reason, for
+  example `CuPy is NOT importable` (run `./run_miner.sh --install-gpu`) or
+  `cudaErrorInsufficientDriver` (the NVIDIA driver is older than the CuPy
+  wheel: install `cupy-cuda11x` instead of `cupy-cuda12x`, or upgrade the
+  driver). With `--backend cuda` the miner refuses to start instead of
+  silently using the CPU.
+* **`--install-gpu` seems to do nothing** — it used to abort silently when
+  `.venv` was missing; it now creates the venv itself. If pip still fails it
+  prints the cause and exits non-zero.
 
 * **`jobs.txt` never appears** — is the relay running? Does the gateway
   respond to `getMiningInfo` (check `pearl-gateway` logs)? Is the token

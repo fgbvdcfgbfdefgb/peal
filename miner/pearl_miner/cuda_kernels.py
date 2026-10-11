@@ -619,3 +619,52 @@ def gpu_devices() -> list:
 
 def cuda_available() -> bool:
     return bool(gpu_devices())
+
+
+def gpu_status() -> str:
+    """
+    Human-readable CuPy / GPU status, for ``run_miner.sh --gpu-info``.
+
+    Says exactly why the GPU engine is or is not usable: CuPy missing, CuPy
+    present but no visible device, or a device whose compute capability is
+    too old for ``__dp4a``.
+    """
+    try:
+        import cupy as cp
+    except Exception as exc:  # pragma: no cover - environment dependent
+        return (f"CuPy is NOT importable ({type(exc).__name__}: {exc}).\n"
+                f"  Install it with:  ./run_miner.sh --install-gpu")
+
+    try:
+        count = cp.cuda.runtime.getDeviceCount()
+    except Exception as exc:  # pragma: no cover - driver problems
+        return (f"CuPy {cp.__version__} is installed but no CUDA device is "
+                f"visible ({type(exc).__name__}: {exc}).\n"
+                f"  Check the driver with nvidia-smi, and that the CuPy "
+                f"wheel matches the CUDA version (cupy-cuda12x needs CUDA "
+                f">= 12, cupy-cuda11x needs CUDA 11.x).")
+
+    if count == 0:
+        return "CuPy is installed but reports 0 CUDA devices."
+
+    lines = [f"CuPy {cp.__version__}: {count} CUDA device(s)"]
+    usable = gpu_devices()
+    for dev in range(count):
+        try:
+            props = cp.cuda.runtime.getDeviceProperties(dev)
+        except Exception as exc:  # pragma: no cover
+            lines.append(f"  [{dev}] <unreadable: {exc}>")
+            continue
+        name = props.get("name", b"?")
+        if isinstance(name, bytes):
+            name = name.decode(errors="replace")
+        major, minor = props.get("computeCapability", (0, 0))
+        total = props.get("totalGlobalMem", 0) / 1024 ** 3
+        sm_count = props.get("multiProcessorCount", 0)
+        optin = props.get("sharedMemPerBlockOptin", 0) / 1024
+        ok = dev in usable
+        lines.append(
+            f"  [{dev}] {name}: sm_{major}{minor}, {total:.1f} GB, "
+            f"{sm_count} SMs, {optin:.0f} KB shared memory -> "
+            + ("USABLE" if ok else "TOO OLD (needs compute capability >= 7.5)"))
+    return "\n".join(lines)

@@ -1,8 +1,10 @@
 # Miner (offline Linux machine) - pip install -r requirements.txt
-# numpy is the only hard requirement; blake3 (pip) is an optional speed-up
-# for the commitment hashes (the miner falls back to its own BLAKE3 port).
+#
+# numpy is the only hard requirement.  blake3 (pip) is an optional speed-up
+# for the commitment hashes; the miner falls back to its own vectorised
+# BLAKE3 port when it is missing, so a failed blake3 install is not fatal.
 numpy>=1.24
-blake3>=1.3 ; platform_machine != "aarch64"
+blake3>=0.3 ; platform_machine != "aarch64"
 
 # ---------------------------------------------------------------------------
 # GPU acceleration (optional but strongly recommended on A10G / sm86 boxes).

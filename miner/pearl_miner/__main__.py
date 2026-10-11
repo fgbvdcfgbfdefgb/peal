@@ -104,6 +104,15 @@ def parse_devices(text: str):
     return ids
 
 
+def gpu_status_line() -> str:
+    """One-line GPU status for the fallback warning."""
+    try:
+        from .cuda_kernels import gpu_status
+        return gpu_status()
+    except Exception:  # pragma: no cover
+        return "GPU status unavailable"
+
+
 def usable_gpu_ids(ids):
     """Filter GPU ids to those CuPy can actually run on."""
     try:
@@ -134,17 +143,23 @@ def make_engine(args, rows, cols, device_id=None):
                 return engine, "cuda"
             except Exception as exc:  # pragma: no cover - driver problems
                 if args.backend == "cuda":
-                    print(f"[miner] GPU engine failed: {exc}", file=sys.stderr)
+                    print(f"[miner] GPU engine failed on device "
+                          f"{device_id}: {exc}", file=sys.stderr)
+                    print(f"[miner] {gpu_status_line()}", file=sys.stderr)
+                    print("[miner] run ./run_miner.sh --gpu-info to diagnose, "
+                          "or --backend numpy to mine on the CPU",
+                          file=sys.stderr)
                     raise SystemExit(2)
-                print(f"[miner] GPU engine unavailable ({exc}); "
-                      f"falling back to numpy", file=sys.stderr)
+                print(f"[miner] WARNING: GPU engine unavailable ({exc}); "
+                      f"falling back to the numpy engine", file=sys.stderr)
         elif args.backend == "cuda":
             print(f"[miner] configuration not supported by the GPU engine: "
                   f"{why}", file=sys.stderr)
             raise SystemExit(2)
         else:
-            print(f"[miner] GPU engine cannot mine this configuration "
-                  f"({why}); using numpy", file=sys.stderr)
+            print(f"[miner] WARNING: GPU engine cannot mine this "
+                  f"configuration ({why}); using the numpy engine",
+                  file=sys.stderr)
     return NumpyEngine(args.m, args.n, args.k, args.rank, rows, cols,
                        batch_size=args.batch, seed=args.seed), "numpy"
 
@@ -303,7 +318,14 @@ def main(argv=None) -> int:
         if not usable:
             if args.backend == "cuda":
                 print("[miner] no usable GPU found", file=sys.stderr)
+                print(f"[miner] {gpu_status_line()}", file=sys.stderr)
+                print("[miner] install CuPy with ./run_miner.sh --install-gpu, "
+                      "diagnose with ./run_miner.sh --gpu-info, or mine on "
+                      "the CPU with --backend numpy", file=sys.stderr)
                 return 2
+            print("[miner] WARNING: no usable GPU - using the numpy engine "
+                  "(run ./run_miner.sh --gpu-info to see why)",
+                  file=sys.stderr)
             engines, backends = [make_engine(args, rows, cols)[0]], ["numpy"]
         else:
             engines, backends = [], []
@@ -325,6 +347,9 @@ def main(argv=None) -> int:
         return 2
 
     print("[miner] Pearl solo miner (source build, offline)")
+    if backends and all(b == "numpy" for b in backends):
+        print("[miner] *** CPU (numpy) engine - the GPUs are NOT being "
+              "used.  Run ./run_miner.sh --gpu-info to find out why. ***")
     print(f"[miner] jobs file : {args.jobs}")
     print(f"[miner] share file: {args.shares}")
     labels = []
