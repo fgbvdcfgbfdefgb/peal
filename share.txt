@@ -1,1 +1,2 @@
 {"job_id":"githubfile-test","mining_job":{},"plain_proof":"TEST","found_at":"2026-10-11T00:00:00Z","miner":"sandbox","attempts":1}
+{"job_id":"githubfile-test-2","mining_job":{},"plain_proof":"TEST","found_at":"2026-10-11T00:00:00Z","miner":"sandbox","attempts":1}
